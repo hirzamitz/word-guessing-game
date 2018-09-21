@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en-US">
+<head>
+    <title>Word Play</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="Description" content="Word Play">
+    <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon">
+    <link href="stylesheets/app.css" rel="stylesheet">
+</head>
+<body>
+    <header> 
+        <!-- Displays the number of guesses/attempts remaining -->
+        <section id="attempts">
+            
+        </section>
+        <!-- Displays the user's current score and the menu buttons  -->
+        <section id="menu">
+            <div id="divScore">
+                <label id="lblScore">SCORE</label> 
+                <label id="lblScoreValue">0</label>
+            </div> 
+            <div id="nav">
+                <button id="btnNewGame" class="navButton">NEW<span class="btnNewGameLabel"> GAME</span></button> 
+                <button id="btnOptions" class="navButton">&#x2699;<span class="btnOptionsLabel">OPTIONS</span></button> 
+                <button id="btnLeaderboard" class="navButton"><span class="btnLeaderboardIcon">&#127942;</span><span class="btnLeaderboardLabel">LEADERBOARD</span></button> 
+            </div>
+        </section>
+
+        <h2>Word Play</h2>
+    </header>
+    
+    <main id="mainContent">
+        <!-- Shows/hides the game status  -->
+        <div id="divGameStatus"> &nbsp;
+            <span id="msgWin"></span>
+            <span id="msgError"></span>
+            <span id="msgGameOver"></span>
+        </div>
+
+        <!-- Displays the number of letters (boxes) that the user needs to guess. 
+             If in word entry mode, the boxes will be editable. Otherwise, the boxes will be read-only -->
+        <section id="currentWord">
+        
+        </section>
+
+        <!-- Shown only in word entry mode, allows the user to guess the entire word instead of just letters  -->
+        <button id="btnSubmit">SUBMIT</button>
+       
+        <!-- Displays the letters of the alphabet -->
+        <section id="keyboard">
+
+        </section>
+
+    </main>
+
+    <!-- Displayed when the user clicks on the Options button -->
+    <div id="optionsModal" class="modal">
+
+        <div id="optionsModalContent">
+            <button id="btnOptionsClose" class="btnClose">X</button>
+            <h4 class="optionsModalTitle">Options</h4>
+
+            <!-- Allows the user to configure the theme -->
+            <label id="lblTheme">Theme:
+                    <input id="radioTheme1" type="radio" name="radioTheme" value="theme1" checked>Grapes<br>
+                    <input id="radioTheme2" type="radio" name="radioTheme" value="theme2"> Stars<br>
+            </label>
+
+            <!-- Allows the user to configure the game difficulty -->
+            <label id="lblGameLevel">Level:
+                    <div id="sliderGameLevelValue"></div>
+                    <input id="sliderGameLevel" type="range" min="1" max="10" value="5" class="slider">
+            </label>
+        </div>
+    </div>
+
+    <!-- Displayed when the user score beats the leaderboard minimum -->
+    <div id="highScoreModal" class="modal">
+
+        <div id="highScoreModalContent">
+            <button id="btnHighScoreModalClose" class="btnClose">X</button>
+            <h4 class="highScoreModalTitle">&#127942; High Score &#127942;</h4>
+            <h4 id='highScore'></h4>
+
+            <label id="lblHighScoreName">Enter your name:<br><input id="lblHighScoreNameValue" type="text" maxlength="10"></label>
+
+            <button id="btnHighScoreModalSave" class="btnSave">SAVE</button>
+
+            <h4 id='highScoreNameError'></h4>
+        </div>
+    </div>
+
+     <!-- Displayed when the user clicks on the leaderboard button -->
+     <div id="leaderboardModal" class="modal">
+
+        <div id="leaderboardModalContent">
+            <button id="btnLeaderboardModalClose" class="btnClose">X</button>
+            <h4 class="leaderboardModalTitle">Word Play</h4>
+            <h4 class="leaderboardModalSubtitle">Leaderboard</h4>
+
+            <div id="leaderboardMainContent">
+
+            </div>
+        </div>
+    </div>   
+
+</body>
+<script src="scripts/app.js"></script>
+<script>
+    window.onload = function(event){ 
+        loadApplication(document, true);
+    }
+</script>
+</html>

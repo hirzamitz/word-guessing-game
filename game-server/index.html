@@ -1,0 +1,34 @@
+<html>
+    <head>
+        <title>Leaderboard</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta name="Description" content="REACH Coding Challenge Leaderboard">
+        <style>
+            body{
+                margin: 0;
+                padding: 30px;
+                width: 100%;
+                display: block;
+                overflow: hidden;
+                font-family: 'Calibri', sans-serif;
+                background: #fefefe;
+            }
+            form{
+                margin: 10px;
+            }
+            h4{
+                margin-bottom: 5px;
+            }
+        </style>
+    </head>
+    <body>
+        <h1>Word Play Leaderboard</h1>
+        <form method="post" action="/addscore">
+        <h4>ADD YOUR HIGH SCORE</h4>
+        <input type="text" name="user" placeholder="User name" required>
+        <input type="text" name="score" placeholder="Score" required>
+        <input type="submit" value="Submit">
+        </form>
+    </body>
+
+</html>
