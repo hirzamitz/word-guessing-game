@@ -31,6 +31,7 @@ loadApplication = function(document, refresh){
 loadDictionary = function(document, refresh){
 
     changeGameLevel(-1);
+    fetchOfflineRequestsFromIDB();
     
     var url = getURL();
 
@@ -292,18 +293,148 @@ addClickEvents = function(document){
 postHighScore = function(data){
 
     var url = getLeaderboardURL() + 'addscore';
-
-    console.log(data);
+    
     fetch(url, {
         method: 'POST',
         body: JSON.stringify(data), 
         headers:{
             'Content-Type': 'application/json'
         }
-    }).then(res => res.text())
+    })
+    .then(response => {
+        // Assume that the database is offline if !response.ok and !response.redirected
+        if (!response.ok && !response.redirected) {
+            throw Error(response.statusText);
+        }
+        return response.text();
+    })
     .then(response => console.log('Success:', JSON.stringify(response)))
-    .catch(error => console.error('Error:', error));
+    .catch(error => postFetchError(error, url, data));
 
+    function postFetchError(e, request_url, data){
+        // Add the score to indexedDB if a database connection cannot be made
+        if (e == 'TypeError: Failed to fetch'){
+            idb.open('WordPlay').then(db => {
+                const offlineObj = db.transaction('offlineRequests', 'readwrite');
+                      const offlineStore = offlineObj.objectStore('offlineRequests');
+                    offlineStore.put({
+                        url: request_url,
+                        method: 'POST',
+                        data: data
+                    });
+                  alert('An error occurred. Score will be saved to the server once a network connection is made.');
+                  return offlineObj.complete;
+            });
+        }
+        console.log(`Error occurred for POST request. Returned status of ${e}`);
+    }
+
+}
+
+/**
+* Fetch all offline requests.
+*/
+fetchOfflineRequestsFromIDB = function() {
+
+    const idbPromise = createIDBObjects();
+
+    idbPromise.onerror = function(e) {
+        return;
+    };
+    
+    // Retrieve the offline requests from indexedDB
+    idbPromise.then(db => {
+
+        if (!db.objectStoreNames) {
+            db.close();
+            throw Error("An error occurred while opening the WordPlay IDB");
+        }
+
+        const requestsObj = db.transaction('offlineRequests', 'readwrite');
+        var requestsStore = requestsObj.objectStore('offlineRequests');
+
+        return requestsStore.getAll();
+
+    })
+    .then(requests => fetchOfflineRequests(idbPromise, requests))
+    .catch(e => console.log(`fetchOfflineRequestsFromIDB: ${e}`));
+
+    function fetchOfflineRequests (idbPromise, requests) {
+
+        var error, hasError;
+
+        // Loop over the array of requests and call the appropriate fetch method for each request
+        if (requests){
+            for (let i = 0; i < requests.length; i++){
+
+                let request = requests[i];
+
+                if(request.method == 'POST'){
+                    processOfflinePost(request, idbPromise, error);
+                }
+                if (error){                     // If an error occurs, assume that no database connection can be made and stop looping
+                    if (error.length > 0){
+                        hasError = true;
+                        break;
+                    }
+                }
+                
+            }
+        }
+        if (hasError){
+            throw Error(error);
+        }
+
+        return;
+
+    }
+
+    function processOfflinePost(request, idbPromise, error){
+        fetch(request.url, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(request.data)
+        })
+        .then(response => {
+            // Assume that the database is offline
+            if (!response.ok) {
+                throw Error(response.statusText);
+            }
+            // Delete requests from IDB
+            deleteFromIDB(idbPromise, request.id);
+        })
+        .catch(e => requestError(error, e));
+    }
+
+    function requestError(error, e) {
+        error = (`Error occurred for POST offline request. Returned status of ${e}`);
+    }
+
+    function deleteFromIDB(idbPromise, id){
+        return idbPromise.then(db => {
+            const tx = db.transaction('offlineRequests', 'readwrite');
+            tx.objectStore('offlineRequests').delete(parseInt(id));
+            return tx.complete;
+        });
+    }
+}
+
+
+/**
+ * Create IDB object stores
+ */
+createIDBObjects = function(){
+
+    return idb.open('WordPlay', 1, upgradeDb => {
+
+        var offlineStore = upgradeDb.createObjectStore('offlineRequests',{
+            keyPath: 'id',
+            autoIncrement: true
+        });
+
+    });
 }
 
 addWindowClickEvents = function(document){
@@ -735,8 +866,8 @@ displayGameMessage = function(document, id, message, icon){
 
 showSuccessMessage = function(document){
 
-    // Increment the score by 1
-    setScore(document, current_score + 1);
+    // Increment the score by the game level
+    setScore(document, current_score + parseInt(game_level));
 
     isLastGameAWin(true);
 

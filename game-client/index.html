@@ -4,7 +4,14 @@
     <title>Word Play</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="Description" content="Word Play">
-    <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon">
+    <link rel="icon" href="/favicon.ico" type="image/x-icon">
+    <link rel="manifest" href="manifest.json">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-title" content="Word Play">
+    <link rel="apple-touch-icon" href="/images/Icon-512.png">
+    <meta name="Description" content="Offline First Word Guessing Game App">
+    <meta name="theme-color" content="#dddddd">
     <link href="stylesheets/app.css" rel="stylesheet">
 </head>
 <body>
@@ -105,10 +112,12 @@
     </div>   
 
 </body>
+<script src="scripts/idb.js"></script>
 <script src="scripts/app.js"></script>
 <script>
     window.onload = function(event){ 
         loadApplication(document, true);
     }
 </script>
+ <script src="/scripts/serviceworkerController.js"></script> 
 </html>

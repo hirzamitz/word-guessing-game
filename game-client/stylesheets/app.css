@@ -1,9 +1,11 @@
 @font-face {
     font-family: 'Chango';
+    font-display: block;
     src: url('/stylesheets/fonts/Chango/Chango-Regular.ttf');
 }
 @font-face {
     font-family: 'Baloo Bhai';
+    font-display: block;
     src: url('/stylesheets/fonts/Baloo_Bhai/BalooBhai-Regular.ttf');
 }
 html{
